@@ -17,10 +17,10 @@ class trainer(object):
         else :
             print('Model is None')
 
-        self.model.to(device)
+        self.model.to(conf.device)
 
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = optim.Adam(model.parameters(), lr=0.0003, weight_decay=1e-4)
+        self.optimizer = optim.Adam(model.parameters(), lr=conf.lr, weight_decay=1e-4)
 
         self.writer = SummaryWriter(conf.log_path)
 
@@ -37,10 +37,10 @@ class trainer(object):
 
         torch.save(state_dict, save_path)
 
-    def load_state(self, save_path, epoch):
+    def load_state(self, epoch = 'best'):
         load_filename = 'model_epoch_%s.pth' % epoch
         load_path = os.path.join(self.conf.model_path, load_filename)           
-        self.model.load_state_dict(torch.load(load_path))
+        self.model.load_state_dict(torch.load(load_path)['model'])
 
     def evaluate(self, dataloader):
         tar, far, frr, acc = evaluate(self.model, dataloader)
@@ -51,11 +51,11 @@ class trainer(object):
         return tar, far, frr, acc
 
     def adjust_learning_rate(optimizer,epoch):
-        if epoch<50:
+        if epoch<self.conf.milestones[0]:
             lr=0.001
-        elif epoch>=50 and epoch<150:
+        elif epoch>=self.conf.milestones[0] and epoch<self.conf.milestones[1]:
             lr=0.0001
-        elif epoch>=150:
+        elif epoch>=self.conf.milestones[1]:
             lr=0.00001
         for param_group in optimizer.param_groups:
             param_group['lr']=lr

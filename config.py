@@ -42,12 +42,7 @@ def get_config(training = True):
     ])
     
     
-    # Training Config  
-    if training:        
-        conf.lr = 1e-1
-        conf.milestones = [7,14,20]
-        conf.momentum = 0.9
-        conf.num_workers = 3
-        conf.ce_loss = CrossEntropyLoss()    
+    conf.lr = 1e-2
+    conf.milestones = [50,150]
 
     return conf

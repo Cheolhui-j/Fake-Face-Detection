@@ -4,6 +4,7 @@ from torch import nn
 import torch.utils.model_zoo as model_zoo
 
 from dataset import *
+from config import get_config
 
 
 if __name__ == '__main()__' :
