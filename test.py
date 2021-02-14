@@ -35,8 +35,5 @@ model.load_state_dict(pretrained['model'],strict=False)
 model.to(device)
 model.eval()
 val, far, frr, acc = test(model, testloader)
-# val, far, frr, acc = save_bad_ex(model, test_datasets, testloader)
-# img_path = ' '
-# gradcam_test(model, img_path)
 
 print(acc)

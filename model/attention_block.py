@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 
-class att(nn.Module):
+class Attention_block(nn.Module):
 ######### Image Attention Model #########
 ### Block 1 ###
     def __init__(self, input_channels, **kwargs):
@@ -15,17 +15,17 @@ class att(nn.Module):
         self.depthwise_separable_conv_1 = nn.Conv2d(self.input_channels, 32, kernel_size=1, stride=1)
         self.batch_norm_1 = nn.BatchNorm2d(32)
         self.relu_1 = nn.ReLU(inplace=True)
-        self.Attention_block_1 = Attention_block(32, 32)
+        self.Attention_1 = Attention(32, 32)
 
         self.depthwise_separable_conv_2 = nn.Conv2d(32, 32*2, kernel_size=1, stride=1)
         self.batch_norm_2 = nn.BatchNorm2d(32*2)
         self.relu_2 = nn.ReLU(inplace=True)
-        self.Attention_block_2 = Attention_block(32 * 2, 32 * 2)
+        self.Attention_2 = Attention(32 * 2, 32 * 2)
 
         self.depthwise_separable_conv_3 = nn.Conv2d(32*2, 32*3, kernel_size=1, stride=1)
         self.batch_norm_3 = nn.BatchNorm2d(32*3)
         self.relu_3 = nn.ReLU(inplace=True)
-        self.Attention_block_3 = Attention_block(32*3, 32*3)
+        self.Attention_3 = Attention(32*3, 32*3)
 
         ### final stage ###
         self.conv_f = nn.Conv2d(32*3, 512, kernel_size=1, stride=1, bias=False) #origin - 576
@@ -39,17 +39,17 @@ class att(nn.Module):
         x1 = self.depthwise_separable_conv_1(x1)
         x1 = self.batch_norm_1(x1)
         x1 = self.relu_1(x1)
-        x1 = self.Attention_block_1(x1)
+        x1 = self.Attention_1(x1)
 
         x2 = self.depthwise_separable_conv_2(x1)
         x2 = self.batch_norm_2(x2)
         x2 = self.relu_2(x2)
-        x2 = self.Attention_block_2(x2)
+        x2 = self.Attention_2(x2)
 
         x3 = self.depthwise_separable_conv_3(x2)
         x3 = self.batch_norm_3(x3)
         x3 = self.relu_3(x3)
-        x3 = self.Attention_block_3(x3)
+        x3 = self.Attention_3(x3)
 
         ### final stage ###
         x6 = self.conv_f(x3)
@@ -60,7 +60,7 @@ class att(nn.Module):
         return x6.squeeze()
 
 
-class Attention_block(nn.Module):
+class Attention(nn.Module):
     def __init__(self, input_dim, out_dim, **kwargs):
         super(Attention_block, self).__init__(**kwargs)
         self.channels = input_dim

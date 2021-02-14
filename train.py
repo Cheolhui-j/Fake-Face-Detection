@@ -53,24 +53,6 @@ optimizer = optim.Adam(model.parameters(), lr=0.0003, weight_decay=1e-4)
 model.to(device)
 
 
-def adjust_learning_rate(optimizer,epoch):
-  if epoch<50:
-    lr=0.001
-  elif epoch>=50 and epoch<150:
-    lr=0.0001
-  elif epoch>=150:
-    lr=0.00001
-  for param_group in optimizer.param_groups:
-    param_group['lr']=lr
-
-
-def get_lr(optimizer):
-  lr=[]
-  for param_group in optimizer.param_groups:
-    lr+=[param_group['lr']]
-  return lr
-
-
 
 epochs = 300
 steps = 0

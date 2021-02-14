@@ -174,70 +174,6 @@ class ResNet(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         #self.fc = nn.Linear(512 * block.expansion, num_classes)
 
-        #initialize gram block 
-        self.Gram = Gram
-
-        if self.Gram: 
-            self.gram = GramMatrix()
-
-            self.conv_interi_0 = nn.Sequential(nn.Conv2d(3,32, kernel_size=3, stride=1, padding=1,
-                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
-
-            self.conv_inter0_0 = nn.Sequential(nn.Conv2d(64,32, kernel_size=3, stride=1, padding=1,
-                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
-
-
-
-            self.conv_inter1_0 = nn.Sequential(nn.Conv2d(64,32, kernel_size=3, stride=1, padding=1,
-                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
-
-
-
-            self.conv_inter2_0 = nn.Sequential(nn.Conv2d(64,32, kernel_size=3, stride=1, padding=1,
-                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
-
-            self.conv_inter3_0 = nn.Sequential(nn.Conv2d(128,32, kernel_size=3, stride=1, padding=1,
-                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
-
-
-            self.conv_inter4_0 = nn.Sequential(nn.Conv2d(256,32, kernel_size=3, stride=1, padding=1,
-                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
-
-
-
-            self.gi_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
-            self.gi_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
-
-            self.g0_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
-            self.g0_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
-
-            self.g_fc1r = nn.Sequential(nn.Conv2d(1,16, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
-            self.g_fc2r = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
-                                bias=False), nn.BatchNorm2d(32),nn.ReLU())
-
-
-            self.g2_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
-            self.g2_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
-
-            self.g3_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
-            self.g3_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
-
-            self.g4_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
-            self.g4_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
-                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
-        else : 
-            self.fc = nn.Linear(512 * block.expansion, num_classes)
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -280,83 +216,25 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x3=x
-        x = self.conv1(x3)
-        x = self.bn1(x)
-        x4 = self.relu(x)
-        x5 = self.maxpool(x4)
+        xi=x
+
+        x1 = self.conv1(xi)
+        x1 = self.bn1(x1)
+        x1 = self.relu(x1)
+        x1 = self.maxpool(x1)
 
 
-        x6 = self.layer1(x5)
-        x7 = self.layer2(x6)
-        x8 = self.layer3(x7)
-        x = self.layer4(x8)
+        x2 = self.layer1(x1)
+        x3 = self.layer2(x2)
+        x4 = self.layer3(x3)
+        x5 = self.layer4(x4)
 
-        
-
-        x = self.avgpool(x)
+        x = self.avgpool(x5)
         x = x.view(x.size(0), -1)
 
+        #x = self.fcnewr(x)
 
-        # 
-        if self.Gram:
-            gi=self.conv_interi_0(x3)
-
-            gi=self.gram(gi)
-
-            gi=self.gi_fc1(gi)
-            gi=self.gi_fc2(gi)
-            gi = self.avgpool(gi)
-            gi = gi.view(gi.size(0), -1)
-
-            g0=self.conv_inter0_0(x4)
-
-            g0=self.gram(g0)
-
-            g0=self.g0_fc1(g0)
-            g0=self.g0_fc2(g0)
-            g0 = self.avgpool(g0)
-            g0 = g0.view(g0.size(0), -1)
-            g1=self.conv_inter1_0(x5)
-
-            g1=self.gram(g1)
-
-            g1=self.g_fc1r(g1)
-            g1=self.g_fc2r(g1)
-            g1 = self.avgpool(g1)
-            g1 = g1.view(g1.size(0), -1)
-
-            g2=self.conv_inter2_0(x6)
-
-            g2=self.gram(g2)
-
-            g2=self.g2_fc1(g2)
-            g2=self.g2_fc2(g2)
-            g2 = self.avgpool(g2)
-            g2 = g2.view(g2.size(0), -1)
-            g3=self.conv_inter3_0(x7)
-
-            g3=self.gram(g3)
-
-            g3=self.g3_fc1(g3)
-            g3=self.g3_fc2(g3)
-            g3 = self.avgpool(g3)
-            g3 = g3.view(g3.size(0), -1)
-            g4=self.conv_inter4_0(x8)
-
-            g4=self.gram(g4)
-
-            g4=self.g4_fc1(g4)
-            g4=self.g4_fc2(g4)
-            g4 = self.avgpool(g4)
-            g4 = g4.view(g4.size(0), -1)
-
-            return x,gi,g0,g1,g2,g3,g4
-
-        else :
-            x = self.fcnewr(x)
-
-        return x
+        return x, xi, x1, x2, x3, x4
 
 
 def resnet18(pretrained=False, **kwargs):
@@ -431,17 +309,3 @@ def resnext101_32x8d(pretrained=False, **kwargs):
     # if pretrained:
     #     model.load_state_dict(model_zoo.load_url(model_urls['resnext101_32x8d']))
     return model
-
-
-def save_networks(model, epoch, optimizer, total_steps):
-    save_filename = 'model_epoch_%s.pth' % epoch
-    save_path = os.path.join('./weights', save_filename)
-
-    # serialize model and optimizer to dict
-    state_dict = {
-        'model': model.state_dict(),
-        'optimizer' : optimizer.state_dict(),
-        'total_steps' : total_steps,
-    }
-
-    torch.save(state_dict, save_path)
