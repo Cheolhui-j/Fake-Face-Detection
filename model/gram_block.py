@@ -38,7 +38,7 @@ class GramBlock(nn.Module):
 
     def forward(self, x):
 
-        gi=self.conv_interi_0(x3)
+        gi=self.conv_interi(x3)
 
         gi=self.gram(gi)
 

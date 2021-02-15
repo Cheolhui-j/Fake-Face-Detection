@@ -69,31 +69,6 @@ class BasicBlock(nn.Module):
 
         return out
 
-class GramMatrix(nn.Module):
-
-    def forward(self, input):
-        a, b, c, d = input.size()
-
-        features = input.view(a, b, c * d)
-
-        a= features.transpose(1,2)
-
-        G = torch.bmm(features, a)
-
-        plt.imshow(G.cpu().detach().numpy()[0])
-        plt.show()
-
-        G=G.unsqueeze(1)
-        return G.div(b* c * d)
-
-class ScaleLayer(nn.Module):
-
-   def __init__(self, init_value=1):
-       super().__init__()
-       self.scale = nn.Parameter(torch.FloatTensor([init_value]))
-
-   def forward(self, input):
-       return input * self.scale
 
 class Bottleneck(nn.Module):
     expansion = 4

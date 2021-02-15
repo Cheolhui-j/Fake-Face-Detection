@@ -11,6 +11,13 @@ class trainer(object):
 
         self.conf = conf
 
+        if not os.path.exists(self.conf.work_path):
+            os.makedirs(self.conf.work_path)
+        if not os.path.exists(self.conf.model_path):
+            os.makedirs(self.conf.work_path)
+        if not os.path.exists(self.conf.log_path):
+            os.makedirs(self.conf.work_path)
+
         self.model = None
         if self.conf.mode is not None:
             model = combine_model(self.conf.mode)
@@ -43,11 +50,15 @@ class trainer(object):
         self.model.load_state_dict(torch.load(load_path)['model'])
 
     def evaluate(self, dataloader):
+        if dataloader is None:
+            print('Data is Empty')
         tar, far, frr, acc = evaluate(self.model, dataloader)
         return tar, far, frr, acc
 
     def save_bad_ex(self, dataset=None, dataloader = None):
-        tar, far, frr, acc = evaluate(self.model, dataset, dataloader)
+        if dataloader is None or dataset is None:
+            print('Data is Empty')
+        tar, far, frr, acc = save_bad_ex(self.model, dataset, dataloader)
         return tar, far, frr, acc
 
     def adjust_learning_rate(optimizer,epoch):
@@ -69,16 +80,17 @@ class trainer(object):
     def train(self, dataloaders, testloader):
 
         self.model.train()
-        loss = 0
+        running_loss = 0
         total_steps = 0
+        maxi = 0
 
-        for epoch in range(epochs):
+        for epoch in range(self.conf.epochs):
             adjust_learning_rate(optimizer,epoch)
             print (get_lr(optimizer))
             self.model.train()
             for inputs,labels in dataloders:
                 total_steps += 1
-                inputs, labels = inputs.to(device), labels.to(device)
+                inputs, labels = inputs.to(self.conf.device), labels.to(self.conf.device)
                 optimizer.zero_grad()
                 predict = model.forward(inputs)
                 loss = criterion(predict, labels)
@@ -87,7 +99,7 @@ class trainer(object):
                 optimizer.step()
                 running_loss += loss.item()
 
-                if total_steps % loss_freq == 0:
+                if total_steps % self.conf.loss_freq == 0:
                     print("Train loss: {} at step: {}".format(loss, total_steps))
                     self.writer.add_scalar('loss', loss, total_steps)
 
@@ -95,7 +107,7 @@ class trainer(object):
                         ('', epoch, total_steps))
                     self.save_networks(model, 'latest', optimizer, total_steps)
 
-                if epoch % save_epoch_freq == 0:
+                if epoch % self.conf.save_epoch_freq == 0:
                     print('saving the model at the end of epoch %d, iters %d' %
                         (epoch, total_steps))
                     self.save_networks(model, 'latest', optimizer, total_steps)
