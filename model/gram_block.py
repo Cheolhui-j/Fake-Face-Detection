@@ -1,7 +1,10 @@
 import torch
 import torch.nn as nn
+import matplotlib.pyplot as plt
 
 class GramMatrix(nn.Module):
+    def __init__(self):
+        super(GramMatrix, self).__init__()
 
     def forward(self, input):
         a, b, c, d = input.size()
@@ -12,14 +15,15 @@ class GramMatrix(nn.Module):
 
         G = torch.bmm(features, a)
 
-        plt.imshow(G.cpu().detach().numpy()[0])
-        plt.show()
+        # plt.imshow(G.cpu().detach().numpy()[0])
+        # plt.show()
 
         G=G.unsqueeze(1)
         return G.div(b* c * d)
 
 class GramBlock(nn.Module):
     def __init__(self, input_channel):
+        super(GramBlock, self).__init__()
 
         self.input_channel = input_channel
         
@@ -38,9 +42,9 @@ class GramBlock(nn.Module):
 
     def forward(self, x):
 
-        gi=self.conv_interi(x3)
+        gi=self.conv_interi(x)
 
-        gi=self.gram(gi)
+        gi=self.gram.forward(gi)
 
         gi=self.gi_fc1(gi)
         gi=self.gi_fc2(gi)

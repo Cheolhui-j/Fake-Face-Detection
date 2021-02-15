@@ -9,7 +9,7 @@ class Attention_block(nn.Module):
 ######### Image Attention Model #########
 ### Block 1 ###
     def __init__(self, input_channels, **kwargs):
-        super(att, self).__init__()
+        super(Attention_block, self).__init__()
         self.input_channels = input_channels
 
         self.depthwise_separable_conv_1 = nn.Conv2d(self.input_channels, 32, kernel_size=1, stride=1)
@@ -62,7 +62,7 @@ class Attention_block(nn.Module):
 
 class Attention(nn.Module):
     def __init__(self, input_dim, out_dim, **kwargs):
-        super(Attention_block, self).__init__(**kwargs)
+        super(Attention, self).__init__(**kwargs)
         self.channels = input_dim
         self.out_dim = out_dim
         self.filters_f_g = self.channels // 8
@@ -85,8 +85,8 @@ class Attention(nn.Module):
 
         beta = F.softmax(s, dim=-1)  # attention map
 
-        plt.imshow(beta.cpu().detach().numpy()[0])
-        plt.show()
+        # plt.imshow(beta.cpu().detach().numpy()[0])
+        # plt.show()
 
         o = torch.bmm(beta, hw_flatten(h).permute((0,2,1))).permute((0,2,1))  # [bs, N, C]
 

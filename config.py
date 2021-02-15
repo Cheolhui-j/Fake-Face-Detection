@@ -9,11 +9,11 @@ def get_config(training = True):
     conf = edict()
 
     # Data Path
-    conf.train.img_path = './data'
-    conf.train.txt_path = './data'
+    conf.train_img_path = './data/stylegan_train'
+    conf.train_txt_path = './data/stylegan_train.txt'
     
-    conf.test.img_path = './data'
-    conf.test.txt_path = './data'
+    conf.test_img_path = './data/pggan_val'
+    conf.test_txt_path = './data/pggan_val.txt'
     
     # model 
     conf.mode = 'combine' # resnet, gramnet, combine
@@ -26,7 +26,7 @@ def get_config(training = True):
     # check if cuda is available
     conf.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    conf.batch_size = 32
+    conf.batch_size = 16
 
     conf.epochs = 2000
 
@@ -37,7 +37,7 @@ def get_config(training = True):
     # Data argumentation
     conf.train_preprocess = transforms.Compose([
         transforms.ToTensor(),
-        transforms.RandomHorizontalFlip(),
+        #transforms.RandomHorizontalFlip(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 

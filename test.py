@@ -1,14 +1,7 @@
-import numpy as np
-import torch
-import torch.nn
-import cv2
-import random,glob
-from torch.autograd import Variable
-from torchvision.utils import save_image
-
-from model.combine_model import *
 from config import get_config
 from trainer import trainer
+from dataset.dataset import *
+from validate import *
 
 conf = get_config()
 
@@ -24,6 +17,6 @@ testloader =  torch.utils.data.DataLoader(test_datasets,
 model = trainer(conf)
 model.load_state()
 model.eval()
-val, far, frr, acc = test(model, testloader)
+val, far, frr, acc = validate(model, testloader)
 
 print(acc)
