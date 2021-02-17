@@ -16,7 +16,7 @@ it finds the correlation of the synthetic face image and detects the synthetic f
   
   Each element value of the Gram matrix means the correlation value between the feature maps that match each row and column.
 
-  ![Gram Matrix]()
+  ![Gram Matrix](./image/Gram_Matrix.png)
 
   - Transform the matrix through vectorize.
   - Calculate the correlation matrix through the dot product.
@@ -27,7 +27,7 @@ it finds the correlation of the synthetic face image and detects the synthetic f
 
   Each element value of the Self-Attention matrix means the correlation value between the pixels that match each row and column.
 
-  ![self-attention]()
+  ![self-attention](./image/self-attention.png)
 
   - First, Query, Key, and Value are created from the input image through three convolution layers. 
   - Calculate the dot product of Query and Key of the input image calculated above to create an attention score.
