@@ -6,6 +6,8 @@ import torch.utils.model_zoo as model_zoo
 from dataset.dataset import *
 from config import get_config
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+
 conf = get_config()
 
 image_datasets = customData(img_path=conf.train_img_path,txt_path=(conf.train_txt_path),

@@ -12,8 +12,8 @@ def get_config(training = True):
     conf.train_img_path = './data/stylegan_train'
     conf.train_txt_path = './data/stylegan_train.txt'
     
-    conf.test_img_path = './data/pggan_val'
-    conf.test_txt_path = './data/pggan_val.txt'
+    conf.test_img_path = './data/stylegan2_val'
+    conf.test_txt_path = './data/stylegan2_val.txt'
     
     # model 
     conf.mode = 'combine' # resnet, gramnet, combine
@@ -48,6 +48,6 @@ def get_config(training = True):
     
     # initialize learning rate and when to decay learning rate 
     conf.lr = 1e-2
-    conf.milestones = [50,150]
+    conf.milestones = [50,80,110]
 
     return conf

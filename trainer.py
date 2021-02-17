@@ -64,11 +64,13 @@ class trainer(object):
 
     def adjust_learning_rate(self,optimizer,epoch):
         if epoch<self.conf.milestones[0]:
-            lr=0.001
+            lr=self.conf.lr
         elif epoch>=self.conf.milestones[0] and epoch<self.conf.milestones[1]:
-            lr=0.0001
-        elif epoch>=self.conf.milestones[1]:
-            lr=0.00001
+            lr = 1e-3
+        elif epoch >= self.conf.milestones[1] and epoch < self.conf.milestones[2]:
+            lr = 1e-4
+        elif epoch>=self.conf.milestones[2]:
+            lr = 1e-5
         for param_group in optimizer.param_groups:
             param_group['lr']=lr
 

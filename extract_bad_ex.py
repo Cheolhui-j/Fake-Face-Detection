@@ -15,9 +15,9 @@ testloader =  torch.utils.data.DataLoader(test_datasets,
                                                  shuffle=False)
 
 
-model = trainer(conf)
-model.load_state()
-model.eval()
+trainer = trainer(conf)
+trainer.load_state()
+trainer.model.eval()
 
-val, far, frr, acc = save_bad_ex(model, test_datasets, testloader)
+val, far, frr, acc = save_bad_ex(trainer.model, test_datasets, testloader)
 print('tar : {}, far : {}, frr : {}, acc : {}'.format(val, far, frr, acc))
