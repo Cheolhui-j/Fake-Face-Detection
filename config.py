@@ -8,17 +8,17 @@ import os
 def get_config(training = True):
     conf = edict()
 
-    # Data Path
+    # trian Data Path
     conf.train_img_path = './data/stylegan_train'
     conf.train_txt_path = './data/stylegan_train.txt'
-    
+    # test Data Path
     conf.test_img_path = './data/stylegan2_val'
     conf.test_txt_path = './data/stylegan2_val.txt'
     
-    # model 
+    # model name
     conf.mode = 'combine' # resnet, gramnet, combine
 
-    # Save Path
+    # Save model & tensorboard log Path
     conf.work_path = './workspace'
     conf.model_path = os.path.join(conf.work_path, 'models')
     conf.log_path = os.path.join(conf.work_path, 'logs')
@@ -26,8 +26,10 @@ def get_config(training = True):
     # check if cuda is available
     conf.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
+    # batch size
     conf.batch_size = 16
 
+    # epoch
     conf.epochs = 2000
 
     # It means the step to print the loss and the epoch to save the model, respectively.
