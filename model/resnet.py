@@ -112,6 +112,26 @@ class Bottleneck(nn.Module):
 
         return out
 
+##################### define Gram Matrix ######################
+class GramMatrix(nn.Module):
+    def __init__(self):
+        super(GramMatrix, self).__init__()
+
+    def forward(self, input):
+        a, b, c, d = input.size()
+
+        features = input.view(a, b, c * d)
+
+        a= features.transpose(1,2)
+
+        G = torch.bmm(features, a)
+
+        # plt.imshow(G.cpu().detach().numpy()[0])
+        # plt.show()
+
+        G=G.unsqueeze(1)
+        return G.div(b* c * d)
+###############################################################
 
 class ResNet(nn.Module):
 
@@ -148,6 +168,68 @@ class ResNet(nn.Module):
                                        dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         #self.fc = nn.Linear(512 * block.expansion, num_classes)
+
+
+        #################### define gram layer #####################
+        self.gram = GramMatrix()
+
+        self.conv_interi = nn.Sequential(nn.Conv2d(3,32, kernel_size=3, stride=1, padding=1,
+                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
+        
+        self.gi_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
+        
+        self.gi_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
+
+        self.conv_inter0 = nn.Sequential(nn.Conv2d(64,32, kernel_size=3, stride=1, padding=1,
+                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
+        
+        self.g0_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
+        
+        self.g0_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
+
+        self.conv_inter1 = nn.Sequential(nn.Conv2d(64,32, kernel_size=3, stride=1, padding=1,
+                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
+        
+        self.g1_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
+        
+        self.g1_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
+        
+        self.conv_inter2 = nn.Sequential(nn.Conv2d(64,32, kernel_size=3, stride=1, padding=1,
+                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
+        
+        self.g2_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
+        
+        self.g2_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
+        
+        self.conv_inter3 = nn.Sequential(nn.Conv2d(128,32, kernel_size=3, stride=1, padding=1,
+                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
+        
+        self.g3_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
+        
+        self.g3_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
+
+        self.conv_inter4 = nn.Sequential(nn.Conv2d(256,32, kernel_size=3, stride=1, padding=1,
+                                bias=False),nn.BatchNorm2d(32),nn.ReLU(inplace=True))
+        
+        self.g4_fc1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(16), nn.ReLU())
+        
+        self.g4_fc2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1,
+                                bias=False),nn.BatchNorm2d(32), nn.ReLU())
+        
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+
+        ###############################################################
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -195,21 +277,67 @@ class ResNet(nn.Module):
 
         x1 = self.conv1(xi)
         x1 = self.bn1(x1)
-        x1 = self.relu(x1)
-        x1 = self.maxpool(x1)
+        x2 = self.relu(x1)
+        x3 = self.maxpool(x1)
 
 
-        x2 = self.layer1(x1)
-        x3 = self.layer2(x2)
-        x4 = self.layer3(x3)
-        x5 = self.layer4(x4)
+        x4 = self.layer1(x1)
+        x5 = self.layer2(x2)
+        x6 = self.layer3(x3)
+        x = self.layer4(x4)
 
-        x = self.avgpool(x5)
+        x = self.avgpool(x)
         x = x.view(x.size(0), -1)
+
+        ###################### forward gram layer #####################
+
+        gi=self.conv_interi_0(xi)
+        gi=self.gram(gi)
+        gi=self.gi_fc1(gi)
+        gi=self.gi_fc2(gi)
+        gi = self.avgpool(gi)
+        gi = gi.view(gi.size(0), -1)
+
+        g0=self.conv_inter0_0(x2)
+        g0=self.gram(g0)
+        g0=self.g0_fc1(g0)
+        g0=self.g0_fc2(g0)
+        g0 = self.avgpool(g0)
+        g0 = g0.view(g0.size(0), -1)
+
+        g1=self.conv_inter1_0(x3)
+        g1=self.gram(g1)
+        g1=self.g1_fc1(g1)
+        g1=self.g1_fc2(g1)
+        g1 = self.avgpool(g1)
+        g1 = g1.view(g1.size(0), -1)
+
+        g2=self.conv_inter2_0(x4)
+        g2=self.gram(g2)
+        g2=self.g2_fc1(g2)
+        g2=self.g2_fc2(g2)
+        g2 = self.avgpool(g2)
+        g2 = g2.view(g2.size(0), -1)
+
+        g3=self.conv_inter3_0(x5)
+        g3=self.gram(g3)
+        g3=self.g3_fc1(g3)
+        g3=self.g3_fc2(g3)
+        g3 = self.avgpool(g3)
+        g3 = g3.view(g3.size(0), -1)
+        
+        g4=self.conv_inter4_0(x6)
+        g4=self.gram(g4)
+        g4=self.g4_fc1(g4)
+        g4=self.g4_fc2(g4)
+        g4 = self.avgpool(g4)
+        g4 = g4.view(g4.size(0), -1)
+
+        ############################################################### 
 
         #x = self.fcnewr(x)
 
-        return x, xi, x1, x2, x3, x4
+        return x, gi, g0, g1, g2, g3, g4
 
 
 def resnet18(pretrained=False, **kwargs):
