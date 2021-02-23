@@ -20,10 +20,8 @@ class trainer(object):
             os.makedirs(self.conf.log_path)
 
         self.model = None
-        if self.conf.mode is not None:
-            self.model = combine_model(self.conf.mode, self.conf.device)
-        else :
-            print('Model is None')
+        self.model = combine_model(self.conf.mode, self.conf.device)
+
 
         self.model.to(conf.device)
 

@@ -1,13 +1,11 @@
 from model.resnet import *
 from model.attention_block import *
-from model.gram_block import *
 import torch.nn as nn
 
 class combine_model(nn.Module):
     def __init__(self, device):
         super(combine_model, self).__init__()
         self.base_model = None 
-        self.net_mode = mode
         
         self.base_model = resnet18(pretrained = True).to(device)
         self.attention_block = Attention_block(3)

@@ -14,9 +14,6 @@ def get_config(training = True):
     # test Data Path
     conf.test_img_path = './data/stylegan2_val'
     conf.test_txt_path = './data/stylegan2_val.txt'
-    
-    # model name
-    conf.mode = 'combine' # resnet, gramnet, combine
 
     # Save model & tensorboard log Path
     conf.work_path = './workspace'

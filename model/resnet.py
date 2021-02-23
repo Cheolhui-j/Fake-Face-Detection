@@ -281,52 +281,52 @@ class ResNet(nn.Module):
         x3 = self.maxpool(x1)
 
 
-        x4 = self.layer1(x1)
-        x5 = self.layer2(x2)
-        x6 = self.layer3(x3)
-        x = self.layer4(x4)
+        x4 = self.layer1(x3)
+        x5 = self.layer2(x4)
+        x6 = self.layer3(x5)
+        x = self.layer4(x6)
 
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
 
         ###################### forward gram layer #####################
 
-        gi=self.conv_interi_0(xi)
+        gi=self.conv_interi(xi)
         gi=self.gram(gi)
         gi=self.gi_fc1(gi)
         gi=self.gi_fc2(gi)
         gi = self.avgpool(gi)
         gi = gi.view(gi.size(0), -1)
 
-        g0=self.conv_inter0_0(x2)
+        g0=self.conv_inter0(x2)
         g0=self.gram(g0)
         g0=self.g0_fc1(g0)
         g0=self.g0_fc2(g0)
         g0 = self.avgpool(g0)
         g0 = g0.view(g0.size(0), -1)
 
-        g1=self.conv_inter1_0(x3)
+        g1=self.conv_inter1(x3)
         g1=self.gram(g1)
         g1=self.g1_fc1(g1)
         g1=self.g1_fc2(g1)
         g1 = self.avgpool(g1)
         g1 = g1.view(g1.size(0), -1)
 
-        g2=self.conv_inter2_0(x4)
+        g2=self.conv_inter2(x4)
         g2=self.gram(g2)
         g2=self.g2_fc1(g2)
         g2=self.g2_fc2(g2)
         g2 = self.avgpool(g2)
         g2 = g2.view(g2.size(0), -1)
 
-        g3=self.conv_inter3_0(x5)
+        g3=self.conv_inter3(x5)
         g3=self.gram(g3)
         g3=self.g3_fc1(g3)
         g3=self.g3_fc2(g3)
         g3 = self.avgpool(g3)
         g3 = g3.view(g3.size(0), -1)
         
-        g4=self.conv_inter4_0(x6)
+        g4=self.conv_inter4(x6)
         g4=self.gram(g4)
         g4=self.g4_fc1(g4)
         g4=self.g4_fc2(g4)
