@@ -6,6 +6,7 @@ from model.combine_model import *
 from model.resnet import *
 from validate import *
 from tensorboardX import SummaryWriter
+from tqdm import tqdm
 
 class trainer(object):
     def __init__(self, conf):
@@ -61,16 +62,8 @@ class trainer(object):
         return tar, far, frr, acc
 
     def adjust_learning_rate(self,optimizer,epoch):
-        if epoch<self.conf.milestones[0]:
-            lr=self.conf.lr
-        elif epoch>=self.conf.milestones[0] and epoch<self.conf.milestones[1]:
-            lr = 1e-3
-        elif epoch >= self.conf.milestones[1] and epoch < self.conf.milestones[2]:
-            lr = 1e-4
-        elif epoch>=self.conf.milestones[2]:
-            lr = 1e-5
         for param_group in optimizer.param_groups:
-            param_group['lr']=lr
+            param_group['lr']/=10
 
     def get_lr(self,optimizer):
         lr=[]
@@ -86,10 +79,15 @@ class trainer(object):
         maxi = 0
 
         for epoch in range(self.conf.epochs):
-            self.adjust_learning_rate(self.optimizer,epoch)
+            if epoch == self.conf.milestones[0]:
+                self.adjust_learning_rate(self.optimizer)
+            if epoch == self.conf.milestones[1]:
+                self.adjust_learning_rate(self.optimizer)
+            if epoch == self.conf.milestones[2]:
+                self.adjust_learning_rate(self.optimizer)
             print (self.get_lr(self.optimizer))
             self.model.train()
-            for inputs,labels in dataloaders:
+            for inputs,labels in tqdm(iter(dataloaders)):
                 total_steps += 1
                 inputs, labels = inputs.to(self.conf.device), labels.to(self.conf.device)
                 self.optimizer.zero_grad()
